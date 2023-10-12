@@ -82,7 +82,7 @@ void tokenize(const char *pch){
 					addTk(GREATER);
 					pch++;
 				}
-
+//comment
 			case '<': addTk(LESS); pch++; break;
 			case '"':
 				for (start = pch++; *pch == '"'; pch++) {}
