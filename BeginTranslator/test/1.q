@@ -1,4 +1,4 @@
-# program de test
+
 
 function max(x:int, y:int):int
     if(x<y)
@@ -9,7 +9,7 @@ function max(x:int, y:int):int
     end
 
 var i:int;
-i=0;    # iterator
+i=0;  
 while(i<10)
     puti(max(i,5));
     i=i+1;

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "lexer.h"
 #include "utils.h"
@@ -62,10 +63,10 @@ void tokenize(const char *pch){
 			case ')': addTk(RPAR); pch++; break;
 			case '+': addTk(ADD); pch++; break;
 			case '/': addTk(DIV); pch++; break;
-			case '&&': addTk(AND); pch+2; break;
-			case '||': addTk(OR); pch+2; break;
+			case '&&': addTk(AND); pch+=2; break;
+			case '||': addTk(OR); pch+=2; break;
 			case '!':
-				if (pch[1] == "=") {
+				if (pch[1] == ' = ') {
 					addTk(NOT);
 					pch += 2;
 				}
@@ -74,7 +75,7 @@ void tokenize(const char *pch){
 					pch++;
 				}
 			case '>':
-				if (pch[1] == "=") {
+				if (pch[1] == ' = ') {
 					addTk(GREATEREQ);
 					pch += 2;
 				}
@@ -82,10 +83,9 @@ void tokenize(const char *pch){
 					addTk(GREATER);
 					pch++;
 				}
-//comment
 			case '<': addTk(LESS); pch++; break;
 			case '"':
-				for (start = pch++; *pch == '"'; pch++) {}
+				for (start = ++pch; *pch != '"'; pch++) {}
 				if (*pch == '\0')err("end of file while in string");
 				tk = addTk(STR);
 				copyn(tk->text, start, pch);
@@ -96,10 +96,10 @@ void tokenize(const char *pch){
 				line++;
 				pch ++;
 			default:
-				if (isdigit(*pch) || (*pch == '-' && isdigit(*(pch + 1)))) {
+				if (isdigit(*pch) ) {
 					for (start = pch; isdigit(*pch) || (*pch == '.' && isdigit(*(pch + 1))); pch++) {}
 					char* text = copyn(buf, start, pch);
-
+					
 					if (strchr(text, '.') != NULL) {
 						tk = addTk(REAL);
 						tk->r = atof(text);
@@ -108,25 +108,28 @@ void tokenize(const char *pch){
 						tk = addTk(INT);
 						tk->i = atoi(text);
 					}
+					
 				}
 
 				else if (isalpha(*pch) || *pch == '_') {
 					for (start = pch++; isalnum(*pch) || *pch == '_'; pch++) {}
 					char* text = copyn(buf, start, pch);
 					if (strcmp(text, "var") == 0)addTk(VAR);
-					if (strcmp(text, "function") == 0)addTk(FUNCTION);
-					if (strcmp(text, "if") == 0) addTk(IF);
-					if (strcmp(text, "else") == 0)addTk(ELSE);
-					if (strcmp(text, "while") == 0) addTk(WHILE);
-					if (strcmp(text, "end") == 0) addTk(END);
-					if (strcmp(text, "return") == 0) addTk(RETURN);
-					if (strcmp(text, "float") == 0) addTk(TYPE_REAL);
-					if (strcmp(text, "double") == 0)addTk(TYPE_REAL);
-					if (strcmp(text, "string") == 0)addTk(TYPE_STR);
-					if (strcmp(text, "char") == 0) addTk(TYPE_STR);
+					else if (strcmp(text, "function") == 0)addTk(FUNCTION);
+					else if (strcmp(text, "if") == 0) addTk(IF);
+					else if (strcmp(text, "else") == 0)addTk(ELSE);
+					else if (strcmp(text, "while") == 0) addTk(WHILE);
+					else if (strcmp(text, "end") == 0) addTk(END);
+					else if (strcmp(text, "return") == 0) addTk(RETURN);
+					else if (strcmp(text, "int") == 0) addTk(TYPE_INT);
+					else if (strcmp(text, "float") == 0) addTk(TYPE_REAL);
+					else if (strcmp(text, "double") == 0)addTk(TYPE_REAL);
+					else if (strcmp(text, "string") == 0)addTk(TYPE_STR);
+					else if (strcmp(text, "char") == 0) addTk(TYPE_STR);
 					else {
 						tk = addTk(ID);
 						strcpy(tk->text, text);
+						//printf("%s ", tk->text);
 					}
 				
 				}
@@ -136,9 +139,120 @@ void tokenize(const char *pch){
 		}
 	}
 
-void showTokens(){
-	for(int i=0;i<nTokens;i++){
-		Token *tk=&tokens[i];
-		printf("%d\n",tk->code);
+	void showTokens() {
+		for (int i = 0; i < nTokens; i++) {
+			Token* tk = &tokens[i];
+			printf("%d ", tk->line); // Afiseaza mai intai linia
+
+			switch (tk->code) {
+			case ID:
+				printf("ID: %s", tk->text);
+				break;
+			case VAR:
+				printf("VAR");
+				break;
+			case FUNCTION:
+				printf("FUNCTION");
+				break;
+			case IF:
+				printf("IF");
+				break;
+			case ELSE:
+				printf("ELSE");
+				break;
+			case WHILE:
+				printf("WHILE");
+				break;
+			case END:
+				printf("END");
+				break;
+			case RETURN:
+				printf("RETURN");
+				break;
+			case TYPE_INT:
+				printf("TYPE_INT");
+				break;
+			case TYPE_REAL:
+				printf("TYPE_REAL");
+				break;
+			case TYPE_STR:
+				printf("TYPE_STR");
+				break;
+			case REAL:
+				printf("REAL : %lf", tk->r);
+				break;
+			case INT:
+				printf("INT : %d", tk->i);
+				break;
+			case STR:
+				printf("STR :%s", tk->text);
+				break;
+			case COMMA:
+				printf("COMMA");
+				break;
+			case FINISH:
+				printf("FINISH");
+				break;
+			case COLON:
+				printf("COLON");
+				break;
+			case SEMICOLON:
+				printf("SEMICOLON");
+				break;
+			case LPAR:
+				printf("LPAR");
+				break;
+			case RPAR:
+				printf("RPAR");
+				break;
+			case SPACE:
+				printf("SPACE");
+				break;
+			case ASSIGN:
+				printf("ASSIGN");
+				break;
+			case EQUAL:
+				printf("EQUAL");
+				break;
+			case ADD:
+				printf("ADD");
+				break;
+			case SUB:
+				printf("SUB");
+				break;
+			case MUL:
+				printf("MUL");
+				break;
+			case DIV:
+				printf("DIV");
+				break;
+			case AND:
+				printf("AND");
+				break;
+			case OR:
+				printf("OR");
+				break;
+			case NOT:
+				printf("NOT");
+				break;
+			case NOTEQ:
+				printf("NOTEQ");
+				break;
+			case LESS:
+				printf("LESS");
+				break;
+			case GREATER:
+				printf("GREATER");
+				break;
+			case GREATEREQ:
+				printf("GREATEREQ");
+				break;
+			default:
+				printf("UNKNOWN");
+				break;
+			}
+
+			printf("\n");
 		}
 	}
+
