@@ -92,9 +92,13 @@ void tokenize(const char *pch){
 				pch++;
 				break;
 			case '#':
-				for (start = pch++; *pch == '/0'; pch++) {}
+				while (*pch != '\0' && *pch != '\n') {
+					pch++;
+				}
 				line++;
-				pch ++;
+				pch++;
+				break;
+
 			default:
 				if (isdigit(*pch) ) {
 					for (start = pch; isdigit(*pch) || (*pch == '.' && isdigit(*(pch + 1))); pch++) {}
@@ -129,7 +133,7 @@ void tokenize(const char *pch){
 					else {
 						tk = addTk(ID);
 						strcpy(tk->text, text);
-						//printf("%s ", tk->text);
+						/*printf("%s \n", text);*/
 					}
 				
 				}

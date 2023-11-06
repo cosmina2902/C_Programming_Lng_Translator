@@ -129,12 +129,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\files\utils.c" />
+    <ClCompile Include="ad.c" />
     <ClCompile Include="lexer.c" />
     <ClCompile Include="Main.c" />
+    <ClCompile Include="parser.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\files\utils.h" />
+    <ClInclude Include="ad.h" />
     <ClInclude Include="lexer.h" />
+    <ClInclude Include="parser.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\files\test\1.q" />

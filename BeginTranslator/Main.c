@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include"utils.h"
 #include"lexer.h"
+#include"parser.h"
 int main() {
 	
 	//definitii regulate ale limbajului -> definesc atomii lexical -> prin expresii regulate
@@ -14,6 +15,7 @@ int main() {
 	tokenize(inbuf);
 	showTokens();
 	free(inbuf);
-
+	//analiza sintactica
+	parse();
 	return 0;
 }
